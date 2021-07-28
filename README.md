@@ -73,11 +73,6 @@ Tested with Emacs 27.1 and `org-mode` 9.4.6. in Debian.
   * Center visual cross-hairs on POINT.
   * https://github.com/Boruch-Baum/emacs-xhair
 
-* Pkg-Overview
-  [![MELPA](https://melpa.org/packages/pkg-overview-badge.svg)](https://melpa.org/#/pkg-overview)
-  * Make org documentation from an elisp source file
-  * https://github.com/Boruch-Baum/emacs-pkg-overview
-
 * Key-assist
   [![MELPA](https://melpa.org/packages/key-assist-badge.svg)](https://melpa.org/#/key-assist) [![MELPA Stable](https://stable.melpa.org/packages/key-assist-badge.svg)](https://stable.melpa.org/#/key-assist)
   * Simple keybinding cheat-sheet and launcher

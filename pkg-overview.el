@@ -87,10 +87,10 @@
 ;;; Code:
 
 (defun pkg-overview (file)
-  "Create documentation in org-mode format from FILE.
-FILE is an elisp source file formatted according to the emacs
+  "Create documentation in `org-mode' format from FILE.
+FILE is an elisp source file formatted according to the Emacs
 style. Result is an org mode buffer containing the file's
-doumentary comments and docstrings."
+documentary comments and docstrings."
   (interactive "f")
   (switch-to-buffer (get-buffer-create (concat (file-name-nondirectory file) ".org")))
   (insert-file-contents file nil nil nil 'replace)
@@ -99,11 +99,11 @@ doumentary comments and docstrings."
   (let (p0 p1 p2)
     (while (setq p0 (re-search-forward "^(def" nil t))
       (when (not (re-search-forward "^ +\"" nil t))
-        (error "badly formatted file, near %d" p0))
+        (error "Badly formatted file, near %d" p0))
       (setq p1 (match-beginning 0))
       (replace-match "")
       (when (not (re-search-forward "\")?$" nil t))
-        (error "badly formatted file, near %d" p0))
+        (error "Badly formatted file, near %d" p0))
       (setq p2 (match-beginning 0))
       (replace-match "")
       (goto-char p1)
