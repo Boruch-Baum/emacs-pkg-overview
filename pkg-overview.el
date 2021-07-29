@@ -86,6 +86,7 @@
 ;;
 ;;; Code:
 
+;;;###autoload
 (defun pkg-overview (file)
   "Create documentation in `org-mode' format from FILE.
 FILE is an elisp source file formatted according to the Emacs
@@ -152,7 +153,7 @@ documentary comments and docstrings."
   (goto-char (point-min))
   (org-mode)
   (org-cycle) ; open up first-level headings
-  (when (re-search-forward "^\*\* Commentary:" nil t)
+  (when (re-search-forward "^\\*\\* Commentary:" nil t)
     (goto-char (match-beginning 0))
     ;; open up content of anny commentary text
     (org-cycle)))
