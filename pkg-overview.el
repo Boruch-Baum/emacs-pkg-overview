@@ -98,8 +98,14 @@ documentary comments and docstrings."
   (interactive "f")
   (switch-to-buffer (get-buffer-create (concat (file-name-nondirectory file) ".org")))
   (insert-file-contents file nil nil nil 'replace)
+  ;; Remove sets of parentheses that aren't argument lists
   (goto-char (point-min))
+  (let (beg)
+    (while (setq beg (re-search-forward "^(\\(defcustom\\|defvar\\) [^ ]+" nil t))
+      (forward-sexp)
+      (delete-region beg (point))))
   ;; Comment-out docstrings
+  (goto-char (point-min))
   (let (p0 p1 p2)
     (while (setq p0 (re-search-forward "^(def" nil t))
       (when (not (re-search-forward "^ +\"" nil t))
