@@ -86,6 +86,9 @@
 ;;
 ;;; Code:
 
+(defvar pkg-overview--autoload-label " =autoload="
+  "String to identify autoloads.")
+
 ;;;###autoload
 (defun pkg-overview (file)
   "Create documentation in `org-mode' format from FILE.
@@ -124,18 +127,13 @@ documentary comments and docstrings."
   (delete-non-matching-lines  "^;" (point-min) (point-max))
   ;; Move autoload declarations within their target's definition
   (goto-char (point-min))
-  (while (re-search-forward "^;;;###autoload\n" nil t)
-    (replace-match "")
-    (re-search-forward "\n")
-    (replace-match " [autoloaded]\n"))
-  ;; substitute command keys
-  (goto-char (point-min))
   (while (re-search-forward "\\\\\\[[^]]+]" nil t)
     (replace-match (substitute-command-keys (match-string 0))))
   ;; Create org headings and remove extra blank lines
   (dolist
-      (repl '(("^;;;;" "**")
-              ("^;;; (def\\([^ ]+\\) \\([^ \n]+\\)\\( ([^)]*)\\)?[^\n]*" "*** def\\1\t\\2\\3")
+      (repl '(("^;;;###autoload\n"  ";\\&")
+              ("^;;;;" "**")
+              ("^;;; (def\\([^ ]+\\) \\('\\)?\\([^ \n]+\\)\\( ([^)]*)\\)?[^\n]*" "*** def\\1\t\\3\\4")
               ("^;;;" "***")
               ("^;;" " ")
               ("^ +$" "")
@@ -143,6 +141,14 @@ documentary comments and docstrings."
     (goto-char (point-min))
     (while (re-search-forward (car repl) nil t)
       (replace-match (cadr repl))))
+  ;; Place autoload information in nice place
+  (goto-char (point-min))
+  (while (re-search-forward "^**###autoload\n" nil t)
+    (replace-match "")
+    (end-of-line)
+    (insert pkg-overview--autoload-label))
+  (align-regexp (point-min) (point-max)
+                (concat "\\(\\s-*\\)" pkg-overview--autoload-label "$"))
   ;; Create top heading
   (goto-char (point-min))
   (delete-char 1)
@@ -212,6 +218,16 @@ documentary comments and docstrings."
 ;; + The single \t inserted into "(def[^ ]+" headings in insufficient
 ;;   to vertically align symbol names when the "(def[^ ]+" is
 ;;   `define-derived-mode' or `define-obsolete-function-alias'
+;;
+;; + Argument lists that extend to a second line are being truncated
+;;
+;; + Variable definitions that are functions are not being truncated
+;;
+;; + Some defun's are not having their ( deleted
+;;   + eg. w3m.el: w3m-header-arguments
+;;
+;; + Prefacatory comments to a function appear under the preceding heading
+;;   + eg. w3m.el: w3m-header-arguments
 
 ;;
 ;;; pkg-overview.el ends here
