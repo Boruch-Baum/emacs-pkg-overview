@@ -170,6 +170,28 @@ documentary comments and docstrings."
     (insert pkg-overview--autoload-label))
   (align-regexp (point-min) (point-max)
                 (concat "\\(\\s-*\\)" pkg-overview--autoload-label "$"))
+  ;; Move a definition's preface commentary into its heading
+  ;; + For example, in the following quotation, line (1) should
+  ;;   be moved after line (2)
+  ;;
+  ;;        #+begin_quote
+  ;;  (1)   ;; Foo is a great function
+  ;;        (defun foo ()
+  ;;  (2)     "Foo does stuff."
+  ;;        #+end_quote
+  (goto-char (point-max))
+  (let (beg end comment)
+    (while (re-search-backward "^[^*\n][^\n]+\n\\*+ def" nil t)
+      (when (re-search-backward "\n\n" nil t)
+        (goto-char (setq beg (match-end 0)))
+        (when (re-search-forward "^*" nil t)
+          (setq end (match-beginning 0))
+          (setq comment (buffer-substring-no-properties beg end))
+          (delete-region beg end)
+          (if (re-search-forward "^*" nil t)
+            (backward-char)
+           (goto-char (point-max)))
+          (insert comment)))))
   ;; Create top heading
   (goto-char (point-min))
   (delete-char 1)
@@ -240,16 +262,6 @@ documentary comments and docstrings."
 ;; + The single \t inserted into "(def[^ ]+" headings in insufficient
 ;;   to vertically align symbol names when the "(def[^ ]+" is
 ;;   `define-derived-mode' or `define-obsolete-function-alias'
-;;
-;; + Argument lists that extend to a second line are being truncated
-;;
-;; + Variable definitions that are functions are not being truncated
-;;
-;; + Some defun's are not having their ( deleted
-;;   + eg. w3m.el: w3m-header-arguments
-;;
-;; + Prefacatory comments to a function appear under the preceding heading
-;;   + eg. w3m.el: w3m-header-arguments
 
 ;;
 ;;; pkg-overview.el ends here
