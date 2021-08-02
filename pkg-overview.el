@@ -115,6 +115,11 @@ documentary comments and docstrings."
       (while (re-search-forward "^" nil t)
         (replace-match ";;"))
       (widen)))
+  ;; Merge multi-line arg-lists into a single line
+  (goto-char (point-min))
+  (while (re-search-forward "^(def[^ ]+ +[^ ]+ ([^)]+" nil t)
+    (replace-match
+      (replace-regexp-in-string "[\n \t]+" " " (match-string 0))))
   ;; Comment-out def* and adjust pre-existing comments
   (dolist (repl '(("^;;; " ";;;; ")
                   ("^$"    ";;")
@@ -133,7 +138,7 @@ documentary comments and docstrings."
   (dolist
       (repl '(("^;;;###autoload\n"  ";\\&")
               ("^;;;;" "**")
-              ("^;;; (def\\([^ ]+\\) \\('\\)?\\([^ \n]+\\)\\( ([^)]*)\\)?[^\n]*" "*** def\\1\t\\3\\4")
+              ("^;;; (def\\([^ ]+\\) +\\('\\)?\\([^ \n]+\\)\\( ([^)]*)\\)?[^\n]*" "*** def\\1\t\\3\\4")
               ("^;;;" "***")
               ("^;;" " ")
               ("^ +$" "")
