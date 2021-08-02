@@ -136,10 +136,18 @@ documentary comments and docstrings."
   ;; Remove everything else
   (goto-char (point-min))
   (delete-non-matching-lines  "^;" (point-min) (point-max))
-  ;; Move autoload declarations within their target's definition
+  ;; Substitute command keys
   (goto-char (point-min))
-  (while (re-search-forward "\\\\\\[[^]]+]" nil t)
-    (replace-match (substitute-command-keys (match-string 0))))
+  (let (keys)
+    (while (re-search-forward (rx (+? (?? (seq "\\\\<" (+ (not ">")) ">"))
+                                      (+? (seq "\\\\[" (+ (not "]")) "]"))))
+                               nil t)
+      (save-match-data
+        (setq keys (replace-regexp-in-string
+                     "\\\\" ""
+                     (substitute-command-keys (match-string 0))
+                     nil t)))
+      (replace-match keys nil t)))
   ;; Create org headings and remove extra blank lines
   (dolist
       (repl '(("^;;;###autoload\n"  ";\\&")
@@ -216,8 +224,8 @@ documentary comments and docstrings."
 ;;
 ;; + Formatting demands (Stefan Kangas)
 ;;   + Don't show obsolete aliases.
-;;   + Improve representation of autoload cookies
-;;   + Apply function `substitute-command-keys' to doc strings
+;;   + DONE: Improve representation of autoload cookies
+;;   + DONE: Apply function `substitute-command-keys' to doc strings
 ;;   + Re-arrange the author's organization of the file
 ;;     + eg. Move the license to the end, or omit it.
 ;;
