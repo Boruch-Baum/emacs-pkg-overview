@@ -10,7 +10,9 @@
 ;; Keywords: docs help lisp maint outlines tools
 ;; Package: pkg-overview
 ;; Version: 1.0
-;; *No* Package-Requires:
+;; Package-Requires: ((emacs "24.3"))
+;;
+;;   (emacs "24.3") for: read-only-mode
 
 ;; This file is NOT part of GNU Emacs.
 
@@ -177,6 +179,7 @@ documentary comments and docstrings."
   ;; Ta-da!
   (goto-char (point-min))
   (org-mode)
+  (read-only-mode)
   (org-cycle) ; open up first-level headings
   (when (re-search-forward "^\\*\\* Commentary:" nil t)
     (goto-char (match-beginning 0))
